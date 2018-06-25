@@ -12,7 +12,8 @@ import {
     Text,
     View,
     Dimensions,
-    TextInput
+    TextInput,
+    Alert
 } from 'react-native';
 
 let widthOfMargin = Dimensions.get('window').width * 0.05;
@@ -31,7 +32,7 @@ if (Platform.OS === "android") {
 // });
 
 type Props = {};
-export default class App extends Component<Props> {
+export default class LoginLeaf extends Component<Props> {
 
     constructor(props) {
         super(props);
@@ -39,43 +40,73 @@ export default class App extends Component<Props> {
             inputedNum: '',
             inputedPW: '',
         };
-        // this.updateNum = this.updateNum.bind(this);
+        this.updateNum = this.updateNum.bind(this);
         this.updatePW = this.updatePW.bind(this);
     }
 
     updateNum = (newText) => {
-        this.setState((state) => {
-            return {
-                inputedNum: newText,
-            };
-        });
-    };
-
+        this.setState({inputedNum: newText,});
+    }
 
     updatePW(newText) {
-        this.setState({newText});
+        this.setState({inputedPW: newText,});
     }
 
     render() {
-
         return (
             <View style={styles.container}>
                 <TextInput style={styles.textInputStyle}
                            placeholder={'请输入手机号'}
-                           onChangeText={(newText) => this.updateNum(newText)}/>
+                           onChangeText={this.updateNum}/>
                 <Text style={styles.textPromptStyle}>
                     您输入的手机号：{this.state.inputedNum}
                 </Text>
                 <TextInput style={styles.textInputStyle}
                            placeholder={'请输入密码'}
                            secureTextEntry={true}
-                           // onChangeText={this.updatePW}/>
-                           onChangeText={this.updatePW.bind(this)}/>
-                <Text style={styles.bigTextPrompt}>
+                           onChangeText={this.updatePW}/>
+                <Text style={styles.bigTextPrompt} onPress={() => this.userPressConfirm()}>
                     确定
+                </Text>
+                <Text style={styles.bigTextPrompt} onPress={() => this.userPressAddressBook()}>
+                    通讯录
                 </Text>
             </View>
         );
+    }
+
+    // userPressConfirm() {
+    //     this.props.navigator.push({
+    //         phoneNumber: this.state.inputedNum,
+    //         userPW: this.state.inputedPW,
+    //         name: 'waiting',
+    //     });
+    // }
+
+    userPressConfirm() {
+        Alert.alert(
+            '提示',
+            '确定使用' + this.state.inputedNum + '号码登陆吗？',
+            [
+                {
+                    text: '取消', onPress: (() => {
+                    }), style: 'cancel'
+                }, // 按下取消无操作
+                {text: '确定', onPress: this.jumpToWaiting}
+            ]
+        );
+    }
+
+    jumpToWaiting() {
+        this.props.navigator.push({
+            phoneNumber: this.state.inputedNum,
+            userPW: this.state.inputedPW,
+            name: 'waiting',
+        })
+    }
+
+    userPressAddressBook() {
+        // TODO:
     }
 }
 
